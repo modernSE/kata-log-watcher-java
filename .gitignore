@@ -1,0 +1,13 @@
+target/
+bin/
+.idea/**
+*.iml
+**/tmp/**
+**/tmp/**/*
+*.tmp
+*.bak
+.metadata/
+.settings/
+.classpath
+.project
+.checkstyle
