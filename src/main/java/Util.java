@@ -3,7 +3,7 @@
  */
 public class Util {
 
-    public static void writeEmail(final String address, final String msg) {
-        System.out.println("Notifying " + address + ": " + msg);
+    public void writeEmail(Mail mail) {
+        System.out.println("Notifying " + mail.getAddress() + ": " + mail.getMsg());
     }
 }

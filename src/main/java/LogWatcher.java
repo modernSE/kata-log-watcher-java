@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -5,24 +6,29 @@ import java.util.Optional;
  */
 public class LogWatcher {
 
-    private static final String[] subscribers = {"Robert Glaser", "Britta Glatt", "Michael Grün"};
+	//FIXME neuer subsciber -> test will fail
+    private List<User> subscribers;
+	private Util util;
+	private ErrorStateGetter errorStateGetter;
+	private List<INotifier> notifier;
 
+    public LogWatcher(Util util, ErrorStateGetter errorStateGetter, List<User> subscribers, List<INotifier> notifier) {
+		this.util = util;
+		this.errorStateGetter = errorStateGetter;
+		this.subscribers = subscribers;
+		this.notifier = notifier;
+	}
+    
     public void watchAndAlert() {
-        Optional<String> logEntry = Log.popNextLine();
+    	Optional<LogMessage> logEntry = errorStateGetter.getErrorMessage();
         logEntry.ifPresent(this::notifySubscribers);
     }
 
-    private void notifySubscribers(String logMessage) {
-        for (int i = 0; i < subscribers.length; i++) {
-            String name = subscribers[i];
-            name = name.toLowerCase();
-            name.replace("ü", "ue");
-            name.replace("ä", "ae");
-            name.replace("ö", "oe");
-            name.replace(" ", ".");
-            name = name + "@cas.de";
-
-            Util.writeEmail(name, logMessage);
+    private void notifySubscribers(LogMessage logMessage) {
+    	
+    	for (int i = 0; i < subscribers.size(); i++) {
+            User user = subscribers.get(i);
+            notifier.forEach(n -> n.notifyXXX(user, logMessage));
         }
     }
 }
