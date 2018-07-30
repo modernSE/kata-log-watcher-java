@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -5,24 +7,22 @@ import java.util.Optional;
  */
 public class LogWatcher {
 
-    private static final String[] subscribers = {"Robert Glaser", "Britta Glatt", "Michael Grün"};
+	private Util util;
+	private ChatBot chatBot;
+	private WeekendUtil weekendUtil;
 
+    public LogWatcher(Util util, ChatBot chatBot, WeekendUtil weekendUtil) {
+		this.util = util;
+		this.chatBot = chatBot;
+		this.weekendUtil = weekendUtil;
+	}
+    
     public void watchAndAlert() {
-        Optional<String> logEntry = Log.popNextLine();
-        logEntry.ifPresent(this::notifySubscribers);
+    	Optional<String> logLine = Log.popNextLine();
+
+    	util.notify(logLine);
+    	chatBot.notify(logLine);
+    	weekendUtil.notify(logLine);
     }
 
-    private void notifySubscribers(String logMessage) {
-        for (int i = 0; i < subscribers.length; i++) {
-            String name = subscribers[i];
-            name = name.toLowerCase();
-            name.replace("ü", "ue");
-            name.replace("ä", "ae");
-            name.replace("ö", "oe");
-            name.replace(" ", ".");
-            name = name + "@cas.de";
-
-            Util.writeEmail(name, logMessage);
-        }
-    }
 }
