@@ -7,18 +7,23 @@ import java.util.Random;
  */
 public class Log {
 
-    public static Optional<String> popNextLine() {
+    public static final String EXCEPTION_CODE_42 = "ExceptionCode 42";
+    public static final String TRACE_OUTPUT = "Trace output";
+    public static final String DEBUG_OUTPUT = "Debug output";
+    public static final String AN_ERROR_OCCURED = "An error occured";
+
+	public static Optional<String> popNextLine() {
         long someNumber = new Date().getTime();
         if (someNumber % 2 == 0) {
             return Optional.empty();
         } else if (someNumber % 3 == 0) {
-            return Optional.of("An error occured");
+            return Optional.of(AN_ERROR_OCCURED);
         } else if (someNumber % 5 == 0) {
-            return Optional.of("Debug output");
+            return Optional.of(DEBUG_OUTPUT);
         } else if (someNumber % 7 == 0) {
-            return Optional.of("Trace output");
+            return Optional.of(TRACE_OUTPUT);
         } else {
-            return Optional.of("ExceptionCode 42");
+            return Optional.of(EXCEPTION_CODE_42);
         }
 
     }
