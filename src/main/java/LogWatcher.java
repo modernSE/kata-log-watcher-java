@@ -5,24 +5,33 @@ import java.util.Optional;
  */
 public class LogWatcher {
 
-    private static final String[] subscribers = {"Robert Glaser", "Britta Glatt", "Michael Grün"};
-
+    private final ISubscriber[] subscribers;
+    private LogEntry lastTrace;
+    
+    public LogWatcher(final ISubscriber[] subscribers) {
+    	this.subscribers = subscribers;
+   
+    }
+    
     public void watchAndAlert() {
-        Optional<String> logEntry = Log.popNextLine();
-        logEntry.ifPresent(this::notifySubscribers);
+       LogEntry logEntry = Log.popNextLine();
+
+       notifySubscribers(logEntry);
+       
+       if (logEntry.logLevel == LogLevel.Trace) {
+    	   lastTrace = logEntry;
+       }
     }
 
-    private void notifySubscribers(String logMessage) {
+    private void notifySubscribers(LogEntry logEntry) {
         for (int i = 0; i < subscribers.length; i++) {
-            String name = subscribers[i];
-            name = name.toLowerCase();
-            name.replace("ü", "ue");
-            name.replace("ä", "ae");
-            name.replace("ö", "oe");
-            name.replace(" ", ".");
-            name = name + "@cas.de";
-
-            Util.writeEmail(name, logMessage);
+        	if (logEntry.logLevel >= subscribers[i].getMinLogLevel()) {
+        		logEntry.message.ifPresent(subscribers[i]::writeMessage);
+        		
+            	if (logEntry.logLevel == LogLevel.Error42 && lastTrace != null) {            		
+            		lastTrace.message.ifPresent(subscribers[i]::writeMessage);
+            	}
+        	} 	
         }
     }
 }
