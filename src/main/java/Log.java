@@ -6,6 +6,8 @@ import java.util.Random;
  * Created by Ferdinand.Szekeresch on 10.07.2017.
  */
 public class Log {
+	
+	public static Optional<String> lastTraceMessage = Optional.empty();
 
     public static Optional<String> popNextLine() {
         long someNumber = new Date().getTime();
@@ -16,7 +18,9 @@ public class Log {
         } else if (someNumber % 5 == 0) {
             return Optional.of("Debug output");
         } else if (someNumber % 7 == 0) {
-            return Optional.of("Trace output");
+        	Optional<String> traceMessage = Optional.of("Trace output");
+        	lastTraceMessage = traceMessage;
+            return traceMessage;
         } else {
             return Optional.of("ExceptionCode 42");
         }
