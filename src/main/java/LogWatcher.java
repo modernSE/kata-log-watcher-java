@@ -1,3 +1,5 @@
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -5,24 +7,31 @@ import java.util.Optional;
  */
 public class LogWatcher {
 
-    private static final String[] subscribers = {"Robert Glaser", "Britta Glatt", "Michael Grün"};
 
     public void watchAndAlert() {
         Optional<String> logEntry = Log.popNextLine();
-        logEntry.ifPresent(this::notifySubscribers);
-    }
-
-    private void notifySubscribers(String logMessage) {
-        for (int i = 0; i < subscribers.length; i++) {
-            String name = subscribers[i];
-            name = name.toLowerCase();
-            name.replace("ü", "ue");
-            name.replace("ä", "ae");
-            name.replace("ö", "oe");
-            name.replace(" ", ".");
-            name = name + "@cas.de";
-
-            Util.writeEmail(name, logMessage);
+        if (logEntry.isPresent()) {
+        	notifySubscribers(logEntry.get(), SubscriberInitializer.getInitializedSubscribers());	
         }
     }
+
+    private void notifySubscribers(String logMessage, final List<Subscriber> subscribers) {
+        List<Subscriber> relevantSubscriber = LogSubscriberMapper.getRelevantSubscribers(logMessage, subscribers);
+    	for (Subscriber subscriber : relevantSubscriber) {
+            notifySuscriber(logMessage, subscriber);
+        }
+    }
+
+	private void notifySuscriber(String logMessage, Subscriber subscriber) {
+		String name = subscriber.getName();
+		
+		name = name.toLowerCase();
+		name.replace("ü", "ue");
+		name.replace("ä", "ae");
+		name.replace("ö", "oe");
+		name.replace(" ", ".");
+		name = name + "@cas.de";
+
+		Util.writeEmail(name, logMessage);
+	}
 }
