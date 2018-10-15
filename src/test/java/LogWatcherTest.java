@@ -8,7 +8,7 @@ public class LogWatcherTest {
 
     @Test
     public void testLogWatcher() {
-        LogWatcher logWatcher = new LogWatcher();
+        DefaultLogWatcher logWatcher = new DefaultLogWatcher();
         logWatcher.watchAndAlert();
         Assert.fail();
     }
