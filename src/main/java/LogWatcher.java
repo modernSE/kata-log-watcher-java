@@ -1,28 +1,28 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Created by Ferdinand.Szekeresch on 10.07.2017.
  */
 public class LogWatcher {
-
-    private static final String[] subscribers = {"Robert Glaser", "Britta Glatt", "Michael Grün"};
-
-    public void watchAndAlert() {
-        Optional<String> logEntry = Log.popNextLine();
-        logEntry.ifPresent(this::notifySubscribers);
+	private List<Group> groups = new ArrayList<>();
+    private MailGenerator mailGenerator = new MailGenerator();
+    private Mailer mailer = new Mailer();
+    private Logger logger = new DefaultLogger();
+    
+    public LogWatcher() {
+    	groups.add(new ErrorGroup("Britta Glatt", "Michael Grün", "Antonio Materazzo", "Fritz Schnitzel"));
+    	groups.add(new Code42Group("Robert Glaser"));
     }
 
-    private void notifySubscribers(String logMessage) {
-        for (int i = 0; i < subscribers.length; i++) {
-            String name = subscribers[i];
-            name = name.toLowerCase();
-            name.replace("ü", "ue");
-            name.replace("ä", "ae");
-            name.replace("ö", "oe");
-            name.replace(" ", ".");
-            name = name + "@cas.de";
-
-            Util.writeEmail(name, logMessage);
+    public void watchAndAlert() {
+        Optional<String> logEntry = logger.popNextLine();
+        String = logger.getLastTraceOutput();
+        
+        if (logEntry.isPresent()) {
+        	List<Mail> mails = mailGenerator.generateMails(groups, logEntry.get());
+        	mailer.sendMails(mails);
         }
     }
 }

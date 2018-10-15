@@ -9,7 +9,9 @@ public class LogWatcherTest {
     @Test
     public void testLogWatcher() {
         LogWatcher logWatcher = new LogWatcher();
-        logWatcher.watchAndAlert();
+        for(int i = 0; i < 10; i++)
+        	logWatcher.watchAndAlert();
+        
         Assert.fail();
     }
 }
