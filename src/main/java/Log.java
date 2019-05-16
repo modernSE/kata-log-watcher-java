@@ -7,7 +7,7 @@ import java.util.Random;
  */
 public class Log {
 
-    public static Optional<String> popNextLine() {
+    public Optional<String> popNextLine() {
         long someNumber = new Date().getTime();
         if (someNumber % 2 == 0) {
             return Optional.empty();
