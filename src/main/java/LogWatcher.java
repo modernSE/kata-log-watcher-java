@@ -20,6 +20,7 @@ public class LogWatcher {
         	return;
         }
         logEntries.add(logEntry.get());
+        if ()
         if (logEntry.get().equals("An error occured")) {
         	notifySubscribers(logEntry.get(), allSubscribers);
         }
