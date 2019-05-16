@@ -1,28 +1,29 @@
+import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 /**
  * Created by Ferdinand.Szekeresch on 10.07.2017.
  */
 public class LogWatcher {
 
-    private static final String[] subscribers = {"Robert Glaser", "Britta Glatt", "Michael Grün"};
+	private Supplier<Optional<String>> logSupplier;
+	private List<Subscriber> subscribers;
 
+    public LogWatcher(List<Subscriber> subscribers, Supplier<Optional<String>> logSupplier) {
+		this.subscribers = subscribers;
+		this.logSupplier = logSupplier;		
+    }
+    
     public void watchAndAlert() {
-        Optional<String> logEntry = Log.popNextLine();
+        Optional<String> logEntry = logSupplier.get();
         logEntry.ifPresent(this::notifySubscribers);
     }
 
     private void notifySubscribers(String logMessage) {
-        for (int i = 0; i < subscribers.length; i++) {
-            String name = subscribers[i];
-            name = name.toLowerCase();
-            name.replace("ü", "ue");
-            name.replace("ä", "ae");
-            name.replace("ö", "oe");
-            name.replace(" ", ".");
-            name = name + "@cas.de";
-
-            Util.writeEmail(name, logMessage);
+        for (Subscriber subscriber: subscribers) {
+        	subscriber.receive(logMessage);
         }
     }
 }
