@@ -22,3 +22,7 @@ Then, things start to get complicated as new requirements gradually come in.
   notify them of everything but debug output.
 * On weekends, there's always one developer on standby. The guys rotate the dev with log-duty.
   If more than 10 errors pile up, he needs to be notified via all available channels.
+
+  
+[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/modernSE/kata-log-watcher-java)
+
