@@ -1,6 +1,5 @@
 import java.util.Date;
 import java.util.Optional;
-import java.util.Random;
 
 /**
  * Created by Ferdinand.Szekeresch on 10.07.2017.
