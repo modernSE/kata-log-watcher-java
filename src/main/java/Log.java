@@ -6,8 +6,7 @@ import java.util.Optional;
  */
 public class Log {
 
-    public static Optional<String> popNextLine() {
-        long someNumber = new Date().getTime();
+    public static Optional<String> popNextLine(long someNumber) {
         if (someNumber % 2 == 0) {
             return Optional.empty();
         } else if (someNumber % 3 == 0) {

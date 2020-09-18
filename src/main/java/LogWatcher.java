@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Optional;
 
 /**
@@ -5,16 +6,23 @@ import java.util.Optional;
  */
 public class LogWatcher {
 
-    private static final String[] subscribers = {"Robert Glaser", "Britta Glatt", "Michael Grün"};
+    private ArrayList<Subscriber> subscribers =  new ArrayList<>();
 
-    public void watchAndAlert() {
-        Optional<String> logEntry = Log.popNextLine();
+    public  static final Subscriber[] defaultSubscribers = { new EmailSubscriber("Robert Glaser"), new EmailSubscriber("Britta Glatt"),
+            new EmailSubscriber("Michael Grün") };
+
+    public void watchAndAlert(long someNumber) {
+        Optional<String> logEntry = Log.popNextLine(someNumber);
         logEntry.ifPresent(this::notifySubscribers);
     }
 
+    public void addSubriber(Subscriber subscriber) {
+        this.subscribers.add( subscriber);
+    }
+
     private void notifySubscribers(String logMessage) {
-        for (int i = 0; i < subscribers.length; i++) {
-            String name = subscribers[i];
+        for (int i = 0; i < subscribers.size(); i++) {
+            String name = subscribers.get(i).getName();
             name = name.toLowerCase();
             name.replace("ü", "ue");
             name.replace("ä", "ae");
@@ -22,7 +30,8 @@ public class LogWatcher {
             name.replace(" ", ".");
             name = name + "@cas.de";
 
-            Util.writeEmail(name, logMessage);
+            subscribers.get(i).onNotify(name, logMessage);
+           // Util.writeEmail(name, logMessage);
         }
     }
 }
