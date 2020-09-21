@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -5,24 +6,24 @@ import java.util.Optional;
  */
 public class LogWatcher {
 
-    private static final String[] subscribers = {"Robert Glaser", "Britta Glatt", "Michael Grün"};
-
-    public void watchAndAlert() {
-        Optional<String> logEntry = Log.popNextLine();
-        logEntry.ifPresent(this::notifySubscribers);
+    private String[] subscribers;
+    LogEntryFilter filter;
+    public LogWatcher(String[] subscribers, LogEntryFilter filter){
+        this.subscribers = subscribers;
+        this.filter = filter;
     }
 
-    private void notifySubscribers(String logMessage) {
-        for (int i = 0; i < subscribers.length; i++) {
-            String name = subscribers[i];
-            name = name.toLowerCase();
-            name.replace("ü", "ue");
-            name.replace("ä", "ae");
-            name.replace("ö", "oe");
-            name.replace(" ", ".");
-            name = name + "@cas.de";
+    public Optional<String> watch() {
+        return Log.popNextLine();
+    }
 
-            Util.writeEmail(name, logMessage);
+    public boolean alert(Optional<String> logEntry) {
+        if(filter.checkLogEntry(logEntry)){
+            return SubscriberNotifier.notifySubscribers(logEntry.get(), subscribers);
         }
+
+        return false;
     }
+
+    
 }
