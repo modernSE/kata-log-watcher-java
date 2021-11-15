@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -5,24 +6,51 @@ import java.util.Optional;
  */
 public class LogWatcher {
 
-    private static final String[] subscribers = {"Robert Glaser", "Britta Glatt", "Michael Grün"};
+    private static final Subscriber[] subscribers = {
+        new Subscriber("Robert Glaser", List.of(2)),
+        new Subscriber("Britta Glatt", List.of(1,2)),
+        new Subscriber("Michael Grün", List.of(1,2)),
+        new Subscriber("Antonio Materazzo", List.of(1,2)),
+        new Subscriber("Fritz Schnitzel", List.of(1,2))
+    };
 
-    public void watchAndAlert() {
-        Optional<String> logEntry = Log.popNextLine();
-        logEntry.ifPresent(this::notifySubscribers);
+    public String watchAndAlert(long time) {
+        Optional<LogMessage> logEntry = Log.popNextLine(time);
+
+        if (logEntry.isPresent() && logEntry.get().isError()) {
+                return notifySubscribers(logEntry.get());
+        }
+
+        return "";
     }
 
-    private void notifySubscribers(String logMessage) {
-        for (int i = 0; i < subscribers.length; i++) {
-            String name = subscribers[i];
-            name = name.toLowerCase();
-            name.replace("ü", "ue");
-            name.replace("ä", "ae");
-            name.replace("ö", "oe");
-            name.replace(" ", ".");
-            name = name + "@cas.de";
+    private String notifySubscribers(LogMessage logMessage) {
+        StringBuilder messages = new StringBuilder();
 
-            Util.writeEmail(name, logMessage);
+        for (int i = 0; i < subscribers.length; i++) {
+            if (subscribers[i].getCodesToNotify().contains(logMessage.getCode())) {
+                String formattedName = formatName(subscribers[i].getName());
+                String mailMessage = buildMessage(formattedName, logMessage.getMessage());
+    
+                Util.writeEmail(mailMessage);
+                messages.append(mailMessage);
+            }
         }
+
+        return messages.toString();
+    }
+
+    private String buildMessage(String name, String message) {
+        return "Notifying " + name + ": " + message + "\n";
+    }
+
+    private String formatName(String name) {
+        name = name.toLowerCase();
+        name.replace("ü", "ue");
+        name.replace("ä", "ae");
+        name.replace("ö", "oe");
+        name.replace(" ", ".");
+
+        return name + "@cas.de";
     }
 }
