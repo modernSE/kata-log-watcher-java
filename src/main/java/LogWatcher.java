@@ -7,7 +7,6 @@ import java.util.Optional;
  */
 public class LogWatcher {
 
-    //private static final String[] subscribers = {"Robert Glaser", "Britta Glatt", "Michael Grün"};
     private List<Person> subscribers = new ArrayList<>();
     private LogProvider logProvider;
     private EmailService emailService;
@@ -27,12 +26,11 @@ public class LogWatcher {
     }
 
     private void notifySubscribers(LogLine logLine) {
-        if (logLine.getLevel() != LogLevel.ERROR) {
-            return;
-        }
 
         for (Person subscriber : subscribers) {
-            emailService.writeEmail(new Email(subscriber.getEmailAddress(), logLine.getMessage()));
+            if (subscriber.getPredicate().shouldAlert(logLine)) {
+                emailService.writeEmail(new Email(subscriber.getEmailAddress(), logLine.getMessage()));
+            }
         }
     }
 }

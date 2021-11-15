@@ -1,10 +1,12 @@
 public class Person {
     private String name;
     private String emailAddress;
+    private LogLinePredicate predicate;
 
-    public Person(String name) {
+    public Person(String name, LogLinePredicate predicate) {
         this.name = name;
         this.emailAddress = calculateEmailAddress(name);
+        this.predicate = predicate;
     }
 
     private String calculateEmailAddress(String name) {
@@ -24,5 +26,8 @@ public class Person {
     public String getEmailAddress() {
         return emailAddress;
     }
-    
+
+    public LogLinePredicate getPredicate() {
+        return predicate;
+    }
 }

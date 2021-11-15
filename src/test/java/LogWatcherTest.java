@@ -79,10 +79,53 @@ public class LogWatcherTest {
         // assert
         assertEquals(List.of(), emailService.getEmails());
     }
+
+    @Test
+    public void watchAndAlert_SHOULD_pickUpNewSubscribers() {
+        // arrange
+        LogProvider logProvider = new DeterministicLogProvider(Optional.of(error("First error")), Optional.of(error("Second error")));
+        DummyEmailService emailService = new DummyEmailService();
+        LogWatcher logWatcher = new LogWatcher(logProvider, emailService);
+        addTestSubscribers(logWatcher);
+
+        // act
+        logWatcher.watchAndAlert();
+        logWatcher.addSubscriber(new Person("Antonio Materazzo", new AlertLogLevel(LogLevel.ERROR)));
+        logWatcher.addSubscriber(new Person("Fritz Schnitzel", new AlertLogLevel(LogLevel.ERROR)));
+        logWatcher.watchAndAlert();
+
+        // assert
+        List<Email> expected = new ArrayList<>();
+        expected.addAll(assembleEmails(ADDRESSES, List.of("First error", "Second error")));
+        expected.addAll(assembleEmails(List.of("antonio.materazzo@cas.de", "fritz.schnitzel@cas.de"), List.of("Second error")));
+        assertEquals(expected, emailService.getEmails());
+    }
+    
+    @Test
+    public void watchAndAlert_SHOULD_honorLogLevelPredicates() {
+        // arrange
+        LogProvider logProvider = new DeterministicLogProvider(Optional.of(error("First error")), Optional.of(error("Second error")), Optional.of(error("ExceptionCode 42")));
+        DummyEmailService emailService = new DummyEmailService();
+        LogWatcher logWatcher = new LogWatcher(logProvider, emailService);
+        addTestSubscribers(logWatcher);
+
+        // act
+        logWatcher.watchAndAlert();
+        logWatcher.addSubscriber(new Person("Antonio Materazzo", new AlertLogLevel(LogLevel.ERROR)));
+        logWatcher.addSubscriber(new Person("Fritz Schnitzel", new AlertException42()));
+        logWatcher.watchAndAlert();
+        logWatcher.watchAndAlert();
+
+        // assert
+        List<Email> expected = new ArrayList<>();
+        expected.addAll(assembleEmails(ADDRESSES, List.of("First error", "Second error", "ExceptionCode 42")));
+        expected.addAll(assembleEmails(List.of("antonio.materazzo@cas.de", "fritz.schnitzel@cas.de"), List.of("Second error")));
+        assertEquals(expected, emailService.getEmails());
+    }
     
     private void addTestSubscribers(LogWatcher logWatcher) {
         for (String name : NAMES) {
-            logWatcher.addSubscriber(new Person(name));
+            logWatcher.addSubscriber(new Person(name, new AlertLogLevel(LogLevel.ERROR)));
         }
     }
 
