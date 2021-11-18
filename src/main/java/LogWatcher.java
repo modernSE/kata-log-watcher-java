@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -5,24 +8,45 @@ import java.util.Optional;
  */
 public class LogWatcher {
 
-    private static final String[] subscribers = {"Robert Glaser", "Britta Glatt", "Michael Grün"};
+    //private static final String[] subscribers = {"Robert Glaser", "Britta Glatt", "Michael Grün"};
 
-    public void watchAndAlert() {
-        Optional<String> logEntry = Log.popNextLine();
-        logEntry.ifPresent(this::notifySubscribers);
+    private Log log;
+    private Integer statusCodeFilter;
+
+    public LogWatcher(Log log) {
+        this.log = log;
     }
 
-    private void notifySubscribers(String logMessage) {
-        for (int i = 0; i < subscribers.length; i++) {
-            String name = subscribers[i];
-            name = name.toLowerCase();
-            name.replace("ü", "ue");
-            name.replace("ä", "ae");
-            name.replace("ö", "oe");
-            name.replace(" ", ".");
-            name = name + "@cas.de";
+    private List<INotificationSubscriber> subscribers = new ArrayList<>();
 
-            Util.writeEmail(name, logMessage);
+    public void setStatusCodeFilter(Integer statusCodeFilter) {
+        this.statusCodeFilter = statusCodeFilter;
+    }
+
+    public void addSubscriber(INotificationSubscriber sub) {
+        subscribers.add(sub);
+    }
+
+    public void watchAndAlert() {
+        Optional<Message> logEntry = log.popNextLine();
+        if(logEntry.isPresent()) {
+            Date date = new Date();
+            int hours = date.getHours();
+            if(statusCodeFilter == null
+             || statusCodeFilter != null && logEntry.get().getStatusCode() == statusCodeFilter) {
+                notifySubscribers(logEntry.get());
+            } 
+        }
+    }
+  //  name = name.toLowerCase();
+   // name.replace("ü", "ue");
+    //name.replace("ä", "ae");
+    //name.replace("ö", "oe");
+    //name.replace(" ", ".");
+    //name = name + "@cas.de";
+    private void notifySubscribers(Message logMessage) {
+        for(var subscriber:subscribers) {
+            subscriber.notify(logMessage);
         }
     }
 }
