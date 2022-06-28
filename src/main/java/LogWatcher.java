@@ -1,14 +1,25 @@
 import java.util.Optional;
 
+import email.Notificator;
+
 /**
  * Created by Ferdinand.Szekeresch on 10.07.2017.
  */
 public class LogWatcher {
 
+    private final Notificator notificator;
+
+    public LogWatcher(Notificator notificator) {
+        this.notificator = notificator;
+    }
+
     private static final String[] subscribers = {"Robert Glaser", "Britta Glatt", "Michael Grün"};
 
-    public void watchAndAlert() {
-        Optional<String> logEntry = Log.popNextLine();
+    public void watch() {
+        alert(Log.popNextLine());
+    }
+
+    void alert(Optional<String> logEntry) {
         logEntry.ifPresent(this::notifySubscribers);
     }
 
@@ -22,7 +33,7 @@ public class LogWatcher {
             name.replace(" ", ".");
             name = name + "@cas.de";
 
-            Util.writeEmail(name, logMessage);
+            notificator.notify(name, logMessage);
         }
     }
 }
