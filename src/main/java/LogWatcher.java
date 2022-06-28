@@ -1,3 +1,5 @@
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -13,16 +15,21 @@ public class LogWatcher {
     }
 
     private void notifySubscribers(String logMessage) {
-        for (int i = 0; i < subscribers.length; i++) {
-            String name = subscribers[i];
-            name = name.toLowerCase();
-            name.replace("ü", "ue");
-            name.replace("ä", "ae");
-            name.replace("ö", "oe");
-            name.replace(" ", ".");
-            name = name + "@cas.de";
+        for (String subscriber : subscribers) {
+            String name = subscriber;
+            name = buildEmailAddress(name);
 
             Util.writeEmail(name, logMessage);
         }
+    }
+
+    private String buildEmailAddress(String name) {
+        name = name.toLowerCase();
+        name.replace("ü", "ue");
+        name.replace("ä", "ae");
+        name.replace("ö", "oe");
+        name.replace(" ", ".");
+        name = name + "@cas.de";
+        return name;
     }
 }

@@ -6,19 +6,28 @@ import java.util.Optional;
  */
 public class Log {
 
+    public static final String DEBUG = "Debug output";
+
+    public static final String TRACE = "Trace output";
+
+    public static final String EXCEPTION = "ExceptionCode 42";
+
+    public static final String ERROR = "An error occured";
+
     public static Optional<String> popNextLine() {
         long someNumber = new Date().getTime();
         if (someNumber % 2 == 0) {
             return Optional.empty();
-        } else if (someNumber % 3 == 0) {
-            return Optional.of("An error occured");
-        } else if (someNumber % 5 == 0) {
-            return Optional.of("Debug output");
-        } else if (someNumber % 7 == 0) {
-            return Optional.of("Trace output");
-        } else {
-            return Optional.of("ExceptionCode 42");
+        } 
+        if (someNumber % 3 == 0) {
+            return Optional.of(ERROR);
+        } 
+        if (someNumber % 5 == 0) {
+            return Optional.of(DEBUG);
         }
-
+        if (someNumber % 7 == 0) {
+            return Optional.of(TRACE);
+        }
+        return Optional.of(EXCEPTION);       
     }
 }
