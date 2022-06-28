@@ -3,7 +3,15 @@
  */
 public class Util {
 
-    public static void writeEmail(final String address, final String msg) {
-        System.out.println("Notifying " + address + ": " + msg);
+    public static String writeEmail(final String address, final String msg) {
+        String email = String.format("Notifying %s: %s", address, msg);
+        if (Log.ERROR.equals(msg) 
+        || (Log.EXCEPTION.equals(msg) && address.contains("Robert")))
+        System.out.println(email);
+        return email;
+    }
+
+    public static String[] getSubscriber(String[] subscribers, String msg) {
+            switch
     }
 }
