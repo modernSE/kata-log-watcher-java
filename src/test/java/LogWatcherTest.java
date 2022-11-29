@@ -1,15 +1,13 @@
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.fail;
 
-/**
- * Created by Ferdinand.Szekeresch on 10.07.2017.
- */
+import org.junit.jupiter.api.Test;
+
 public class LogWatcherTest {
 
     @Test
     public void testLogWatcher() {
         LogWatcher logWatcher = new LogWatcher();
         logWatcher.watchAndAlert();
-        Assert.fail();
+        fail();
     }
 }
