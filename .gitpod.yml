@@ -1,7 +1,11 @@
+image: gitpod/workspace-java-17
 
 tasks:
   - init: mvn install -DskipTests=true
 
 vscode:
   extensions:
+    - redhat.java
+    - vscjava.vscode-maven
     - vscjava.vscode-java-pack
+    - vscjava.vscode-java-test
